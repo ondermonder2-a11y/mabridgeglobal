@@ -9,52 +9,12 @@ import { cn } from '@/lib/utils';
 import {
   ChevronLeft,
   ChevronRight,
-  Truck,
-  RotateCcw,
-  Headphones,
-  ShieldCheck,
-  Flame,
   ArrowRight,
-  CreditCard,
-  Gift,
-  Clock,
-  Award,
-  Lock,
-  BadgeCheck,
-  Package,
-  Phone,
-  Heart,
-  Star,
-  type LucideIcon,
 } from 'lucide-react';
-
-// Ana sayfa avantaj kartları — admin'den seçilebilen ikon anahtarları
-const FEATURE_ICONS: Record<string, LucideIcon> = {
-  truck: Truck,
-  'rotate-ccw': RotateCcw,
-  headphones: Headphones,
-  'shield-check': ShieldCheck,
-  'credit-card': CreditCard,
-  gift: Gift,
-  clock: Clock,
-  award: Award,
-  lock: Lock,
-  'badge-check': BadgeCheck,
-  package: Package,
-  phone: Phone,
-  heart: Heart,
-  star: Star,
-};
-
-interface FeatureCard {
-  id: string;
-  icon: string;
-  title: string;
-  description: string;
-}
 import { SeoHead } from '@/components/seo/SeoHead';
 import { organizationSchema, websiteSchema } from '@/lib/schemas';
 import { CampaignBanner } from '@/components/common/CampaignDisplay';
+import { FeatureCards } from '@/components/common/FeatureCards';
 import { useStoreInfo } from '@/hooks/useStoreInfo';
 
 
@@ -182,21 +142,7 @@ export function Home() {
     staleTime: 1000 * 60 * 5,
   });
 
-  const { data: newArrivalsData, isLoading: isNewArrivalsLoading } = useQuery({
-    queryKey: ['products', 'newest'],
-    queryFn: () => productApi.list({ sort: 'newest', limit: 4 }),
-  });
-
-  const { data: featureCardsData } = useQuery({
-    queryKey: ['feature-cards'],
-    queryFn: async () => (await api.get<{ success: boolean; data: FeatureCard[] }>('/feature-cards')).data.data,
-    staleTime: 1000 * 60 * 10,
-  });
-  const featureCards = featureCardsData ?? [];
-
   const featured = featuredData?.data?.data ?? [];
-  const newArrivals = newArrivalsData?.data?.items ?? [];
-
 
   const nextSlide = () => {
     if (slides.length > 0) {
@@ -263,42 +209,6 @@ export function Home() {
           ))}
         </div>
       </section>
-      )}
-
-      {/* Yeni Gelen Ürünler */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <Flame className="h-6 w-6 text-primary fill-primary animate-pulse" />
-            <h2 className="text-2xl font-bold text-neutral-800 dark:text-neutral-100 tracking-tight">Yeni Gelenler</h2>
-          </div>
-          <Link to="/ara?sort=newest" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}>
-            Tümünü Gör
-          </Link>
-        </div>
-        <ProductGrid products={newArrivals} loading={isNewArrivalsLoading} cols={4} />
-      </section>
-
-      {/* Avantajlar / Hizmet Kutuları — admin'den yönetilir */}
-      {featureCards.length > 0 && (
-        <section className="container mx-auto px-4 py-8 mt-12 bg-white dark:bg-neutral-900 rounded-2xl shadow-xs border border-neutral-100 dark:border-neutral-800">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featureCards.map((card) => {
-              const Icon = FEATURE_ICONS[card.icon] ?? Truck;
-              return (
-                <div key={card.id} className="flex items-center gap-4 px-2">
-                  <div className="p-3.5 bg-primary/10 rounded-xl text-primary shrink-0">
-                    <Icon className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-neutral-800 dark:text-neutral-100 text-sm">{card.title}</h4>
-                    <p className="text-neutral-500 dark:text-neutral-400 text-xs mt-1">{card.description}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
       )}
 
       {/* Campaign Banner */}
@@ -399,6 +309,9 @@ export function Home() {
         </div>
         <ProductGrid products={featured} loading={isFeaturedLoading} cols={4} />
       </section>
+
+      {/* Footer’dan önce: teslimat, kargo, iade ve güvenli ödeme kartları */}
+      <FeatureCards />
     </main>
   );
 }

@@ -403,8 +403,17 @@ export default function Categories() {
                 />
                 <p className="text-xs text-gray-400 mt-1">{uploading ? 'Yükleniyor...' : 'JPG, PNG, WebP vb.'}</p>
                 {form.imageUrl && (
-                  <div className="mt-3 rounded overflow-hidden border border-stroke dark:border-strokedark">
-                    <img src={form.imageUrl} alt={form.name} className="w-full h-32 object-cover" />
+                  <div className="mt-3 space-y-2">
+                    <div className="rounded overflow-hidden border border-stroke dark:border-strokedark">
+                      <img src={form.imageUrl} alt={form.name} className="w-full h-32 object-cover" />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => set('imageUrl', '')}
+                      className="text-xs font-medium text-red-600 hover:text-red-700 hover:underline"
+                    >
+                      Kategori resmini kaldır
+                    </button>
                   </div>
                 )}
               </div>

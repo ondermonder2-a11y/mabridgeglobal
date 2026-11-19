@@ -2483,7 +2483,7 @@ function SliderTab() {
 
   return (
     <div>
-      <SectionCard title="Ana Sayfa Banner Slider Yönetimi" subtitle="Kullanıcı ana sayfasındaki kayan büyük kampanya görsellerini düzenleyin">
+      <SectionCard title="Ana Sayfa Banner Slider Yönetimi" subtitle="Kullanıcı ana sayfasındaki kayan büyük kampanya görsellerini düzenleyin. Net ölçü: 1920 × 960 px (2:1).">
         <div className="space-y-6">
           {slides.map((slide, index) => (
             <div key={index} className="flex flex-col md:flex-row gap-5 p-5 rounded-xl border border-stroke dark:border-strokedark bg-gray-50/50 dark:bg-meta-4/20 relative group">
@@ -2536,7 +2536,7 @@ function SliderTab() {
               {/* Inputs */}
               <div className="flex-1 space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Field label={`Görsel URL #${index + 1}`}>
+                  <Field label={`Görsel URL #${index + 1}`} hint="Önerilen çözünürlük: 1920 × 960 px">
                     <input
                       className={inputCls}
                       value={slide.img}
@@ -4063,6 +4063,7 @@ function PopupTab() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     api.get<{ success: boolean; data: PopupForm | null }>('/admin/popup')
@@ -4072,6 +4073,30 @@ function PopupTab() {
   }, []);
 
   const set = (k: keyof PopupForm, v: unknown) => setForm((p) => ({ ...p, [k]: v }));
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Lütfen bir görsel dosyası seçin.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Görsel boyutu 5 MB’tan küçük olmalıdır.');
+      return;
+    }
+    setUploading(true);
+    try {
+      const response = await api.upload<{ success: boolean; data: { url: string } }>('/admin/upload', file);
+      if (!response.data?.url) throw new Error('Görsel adresi alınamadı.');
+      set('imageUrl', response.data.url);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Görsel yükleme hatası');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -4121,8 +4146,32 @@ function PopupTab() {
             </Field>
           </div>
 
-          <Field label="Resim URL" hint="Opsiyonel — popup üstüne görsel eklemek için">
-            <input value={form.imageUrl} onChange={(e) => set('imageUrl', e.target.value)} className={inputCls} placeholder="https://example.com/banner.jpg" />
+          <Field label="Popup Resmi" hint="Önerilen çözünürlük: 1200 × 675 px · Maksimum 5 MB">
+            <div className="space-y-2">
+              <div className="flex flex-wrap gap-2">
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                  className="block w-full text-sm text-gray-500 file:mr-3 file:rounded file:border-0 file:bg-primary file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-opacity-90 disabled:opacity-50"
+                />
+                {uploading && <span className="text-xs text-gray-400">Yükleniyor…</span>}
+              </div>
+              <input value={form.imageUrl} onChange={(e) => set('imageUrl', e.target.value)} className={inputCls} placeholder="veya https://example.com/banner.jpg" />
+              {form.imageUrl && (
+                <div className="relative overflow-hidden rounded-lg border border-stroke dark:border-strokedark">
+                  <img src={form.imageUrl} alt="Popup önizleme" className="h-32 w-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => set('imageUrl', '')}
+                    className="absolute right-2 top-2 rounded bg-black/70 px-2 py-1 text-xs font-medium text-white hover:bg-red-600"
+                  >
+                    Resmi kaldır
+                  </button>
+                </div>
+              )}
+            </div>
           </Field>
 
           <Field label="Görüntülenme Sıklığı">

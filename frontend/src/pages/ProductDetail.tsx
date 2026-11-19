@@ -345,8 +345,14 @@ export function ProductDetail() {
                 <>
                   <img
                     src={activeImage.url}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl opacity-35"
+                  />
+                  <img
+                    src={activeImage.url}
                     alt={activeImage.altText ?? product.name}
-                    className="w-full h-full object-contain"
+                    className="relative z-10 w-full h-full object-contain"
                   />
                   <div className="absolute inset-0 flex items-end justify-end p-3 opacity-0 group-hover/img:opacity-100 transition-opacity pointer-events-none">
                     <div className="bg-black/40 backdrop-blur-sm rounded-full p-1.5">

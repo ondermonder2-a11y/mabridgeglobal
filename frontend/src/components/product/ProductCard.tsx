@@ -113,12 +113,21 @@ export function ProductCard({ product }: Props) {
         onMouseLeave={stopCycle}
       >
         {activeImage ? (
-          <img
-            src={activeImage.url}
-            alt={activeImage.altText ?? product.name}
-            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-          />
+          <>
+            <img
+              src={activeImage.url}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-35"
+              loading="lazy"
+            />
+            <img
+              src={activeImage.url}
+              alt={activeImage.altText ?? product.name}
+              className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+            />
+          </>
         ) : (
           <span className="text-neutral-400 text-xs font-semibold">Görsel Yok</span>
         )}

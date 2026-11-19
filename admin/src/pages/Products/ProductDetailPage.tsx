@@ -870,7 +870,7 @@ export default function ProductDetailPage() {
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                   <p className="text-sm text-gray-500">Görseli sürükle veya tıkla</p>
-                  <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP · Maks. 5 MB</p>
+                  <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP · Önerilen: 1200 × 1500 px · Maks. 5 MB</p>
                 </>
               )}
             </div>
